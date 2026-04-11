@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F55F2E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json">
+  <title>RepWell</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/missing.css">
+</head>
+<body>
+
+  <!-- Bannière réseau hors-ligne -->
+  <div id="network-banner" class="network-banner hidden">
+    📡 Pas de connexion — certaines fonctions indisponibles
+  </div>
+
+  <!-- ==================== LOADING ==================== -->
+  <div id="screen-loading" class="screen screen-loading active">
+    <img src="assets/images/logo-repwell-transparent.png" alt="RepWell" class="loading-logo">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- ==================== AUTH ==================== -->
+  <div id="screen-auth" class="screen screen-auth">
+    <div class="auth-container">
+      <img src="assets/images/logo-repwell-transparent.png" alt="RepWell" class="auth-logo">
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Connexion</button>
+        <button class="auth-tab" data-tab="signup">Inscription</button>
+      </div>
+
+      <!-- Login -->
+      <form id="form-login" class="auth-form">
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" id="login-email" class="field-input" placeholder="ton@email.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Mot de passe</label>
+          <input type="password" id="login-password" class="field-input" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div id="login-error" class="auth-error hidden"></div>
+        <button type="submit" class="btn-primary btn-full">Se connecter</button>
+        <button type="button" id="btn-forgot-password" class="btn-forgot">Mot de passe oublié ?</button>
+      </form>
+
+      <!-- Signup -->
+      <form id="form-signup" class="auth-form hidden">
+        <div class="field-group">
+          <label class="field-label">Prénom</label>
+          <input type="text" id="signup-prenom" class="field-input" placeholder="Ton prénom" autocomplete="given-name">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" id="signup-email" class="field-input" placeholder="ton@email.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Mot de passe</label>
+          <input type="password" id="signup-password" class="field-input" placeholder="8 caractères minimum" autocomplete="new-password">
+        </div>
+        <div id="signup-error" class="auth-error hidden"></div>
+        <button type="submit" class="btn-primary btn-full">Créer mon compte</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== AUDIT ==================== -->
+  <div id="screen-audit" class="screen screen-audit">
+    <div class="audit-header">
+      <button id="audit-back" class="btn-icon hidden">←</button>
+      <div class="audit-progress-bar">
+        <div id="audit-progress-fill" class="audit-progress-fill"></div>
+      </div>
+      <span id="audit-step-label" class="audit-step-label">Étape 1/7</span>
+    </div>
+    <div id="audit-content" class="audit-content"></div>
+  </div>
+
+  <!-- ==================== RÉSULTAT PROGRAMME ==================== -->
+  <div id="screen-result" class="screen screen-result">
+    <div class="result-container">
+      <div class="result-header">
+        <img src="assets/images/logo-repwell-transparent.png" alt="RepWell" class="result-logo">
+        <h1 id="result-title" class="result-title"></h1>
+        <div id="result-chips" class="result-chips"></div>
+      </div>
+      <div id="result-cards" class="result-cards"></div>
+      <div id="result-week" class="result-week">
+        <h3 class="section-title">Ta semaine type</h3>
+        <div id="result-week-grid" class="result-week-grid"></div>
+      </div>
+      <button id="result-cta" class="btn-primary btn-full">C'est parti — Aller au dashboard</button>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <div id="screen-dashboard" class="screen screen-dashboard has-nav">
+    <div class="screen-scroll">
+      <div class="dashboard-header">
+        <div>
+          <p id="dashboard-greeting" class="greeting"></p>
+          <h1 id="dashboard-name" class="dashboard-name"></h1>
+        </div>
+        <div class="avatar" id="dashboard-avatar"></div>
+      </div>
+
+      <!-- Streak card -->
+      <div class="card streak-card">
+        <div class="streak-main">
+          <div class="streak-flame-wrap">
+            <span class="streak-flame" id="streak-flame">🔥</span>
+          </div>
+          <div>
+            <div id="streak-count" class="streak-count">0</div>
+            <div class="streak-label">Série en cours</div>
+          </div>
+        </div>
+        <div class="streak-bar-wrap">
+          <div class="streak-bar">
+            <div id="streak-bar-fill" class="streak-bar-fill"></div>
+          </div>
+          <span id="streak-record-label" class="streak-record-label">Record : 0 jours</span>
+        </div>
+        <button id="streak-freeze-btn" class="btn-secondary btn-sm streak-freeze hidden">
+          ❄️ Utiliser mon joker
+        </button>
+      </div>
+
+      <!-- Vue semaine -->
+      <div class="card">
+        <h3 class="card-title">Cette semaine</h3>
+        <div id="week-dots" class="week-dots"></div>
+      </div>
+
+      <!-- Prochaine séance -->
+      <div class="card next-session-card">
+        <div id="next-session-tag" class="session-tag"></div>
+        <h2 id="next-session-name" class="next-session-name"></h2>
+        <div id="next-session-meta" class="next-session-meta"></div>
+        <button id="btn-start-session" class="btn-primary btn-full">Commencer la séance</button>
+      </div>
+
+      <!-- Stats du mois -->
+      <div class="card">
+        <h3 class="card-title">Ce mois</h3>
+        <div id="month-stats" class="month-stats"></div>
+      </div>
+
+      <!-- Badges -->
+      <div class="badges-section">
+        <h3 class="card-title">Badges</h3>
+        <div id="dashboard-badges" class="badges-scroll"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROGRAMME ==================== -->
+  <div id="screen-programme" class="screen screen-programme has-nav">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <h1 class="page-title">Mon programme</h1>
+        <div id="programme-meta" class="programme-meta"></div>
+      </div>
+      <div id="programme-blocs" class="programme-blocs"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SÉANCE INTERACTIVE ==================== -->
+  <div id="screen-session" class="screen screen-session">
+    <!-- Header -->
+    <div class="session-header">
+      <button id="session-back" class="btn-icon">←</button>
+      <div class="session-header-center">
+        <div id="session-title" class="session-title"></div>
+        <div id="session-week-label" class="session-week-label"></div>
+      </div>
+      <div class="session-timer-wrap">
+        <span class="session-timer-icon">⏱</span>
+        <span id="session-global-timer" class="session-global-timer">00:00</span>
+      </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="session-progress-wrap">
+      <div class="session-progress-bar">
+        <div id="session-progress-fill" class="session-progress-fill"></div>
+      </div>
+      <span id="session-progress-label" class="session-progress-label">Exercice 1 sur 6</span>
+    </div>
+
+    <!-- Carte exercice -->
+    <div class="session-scroll">
+      <div class="card exercise-card">
+        <div id="exercise-svg" class="exercise-svg"></div>
+        <h2 id="exercise-name" class="exercise-name"></h2>
+        <p id="exercise-muscles" class="exercise-muscles"></p>
+        <div id="exercise-specs" class="exercise-specs"></div>
+
+        <div class="exercise-tips-btn-wrap">
+          <button id="btn-tips-toggle" class="btn-tips-toggle">💡 Conseils techniques</button>
+        </div>
+        <div id="exercise-tips-panel" class="exercise-tips-panel hidden">
+          <ul id="exercise-tips-list" class="exercise-tips-list"></ul>
+        </div>
+
+        <button id="btn-demo" class="btn-secondary btn-sm">▶ Voir la démonstration</button>
+      </div>
+
+      <!-- Tracker séries -->
+      <div id="series-tracker" class="series-tracker"></div>
+
+      <!-- Saisie poids -->
+      <div id="weight-input-zone" class="card weight-zone">
+        <div class="weight-label-row">
+          <span class="weight-label">Poids (kg)</span>
+          <span id="pr-badge" class="pr-badge hidden">🏆 Nouveau record !</span>
+        </div>
+        <div class="weight-controls">
+          <button id="weight-minus" class="weight-btn">−</button>
+          <span id="weight-display" class="weight-display">20</span>
+          <button id="weight-plus" class="weight-btn">+</button>
+        </div>
+        <button id="btn-validate-serie" class="btn-primary btn-full">Valider la série ✓</button>
+      </div>
+
+      <!-- Chrono de repos -->
+      <div id="rest-timer-zone" class="rest-timer-zone hidden">
+        <p class="rest-label">Temps de repos</p>
+        <div class="rest-circle-wrap">
+          <svg class="rest-svg" viewBox="0 0 120 120">
+            <circle class="rest-track" cx="60" cy="60" r="52"/>
+            <circle id="rest-arc" class="rest-arc" cx="60" cy="60" r="52"/>
+          </svg>
+          <span id="rest-countdown" class="rest-countdown">90</span>
+        </div>
+        <div class="rest-actions">
+          <button id="btn-skip-rest" class="btn-secondary">Passer le repos →</button>
+          <button id="btn-ready" class="btn-primary hidden">Prêt ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RÉCAP POST-SÉANCE ==================== -->
+  <div id="screen-recap" class="screen screen-recap">
+    <div class="recap-container">
+      <div id="recap-badge-title" class="recap-badge-title hidden"></div>
+      <h1 id="recap-message" class="recap-message"></h1>
+
+      <div id="recap-stats" class="recap-stats"></div>
+      <div id="recap-prs" class="recap-prs hidden"></div>
+
+      <div class="recap-actions">
+        <button id="btn-recap-progress" class="btn-primary btn-full">Voir ma progression</button>
+        <button id="btn-recap-dashboard" class="btn-secondary btn-full">Retour au dashboard</button>
+      </div>
+    </div>
+
+    <!-- Confettis canvas -->
+    <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+  </div>
+
+  <!-- ==================== PROGRESSION ==================== -->
+  <div id="screen-progress" class="screen screen-progress has-nav">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <h1 class="page-title">Ma progression</h1>
+      </div>
+      <div id="progress-empty" class="progress-empty hidden">
+        <p class="progress-empty-msg">Complete au moins 2 séances pour voir ta progression. 💪</p>
+      </div>
+      <div id="progress-charts" class="progress-charts">
+
+        <div class="card chart-card">
+          <h3 class="card-title">Évolution du poids</h3>
+          <div class="chart-exercise-select">
+            <select id="exercise-select" class="field-input field-select"></select>
+          </div>
+          <canvas id="chart-weight"></canvas>
+        </div>
+        <div class="card chart-card">
+          <h3 class="card-title">Charge totale soulevée (kg) <span class="chart-tooltip" title="Total de tes poids × répétitions sur la semaine">ℹ️</span></h3>
+          <canvas id="chart-volume"></canvas>
+        </div>
+        <div class="card chart-card">
+          <h3 class="card-title">Objectifs atteints</h3>
+          <canvas id="chart-completion"></canvas>
+        </div>
+        <div class="card chart-card">
+          <h3 class="card-title">Régularité des séances</h3>
+          <canvas id="chart-streak"></canvas>
+        </div>
+        <button id="btn-progress-dashboard" class="btn-secondary btn-full" style="margin-bottom:var(--space-xl)">← Retour au dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BADGES ==================== -->
+  <div id="screen-badges" class="screen screen-badges has-nav">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <h1 class="page-title">Mes badges</h1>
+      </div>
+      <div id="badges-grid" class="badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFIL ==================== -->
+  <div id="screen-profile" class="screen screen-profile has-nav">
+    <div class="screen-scroll">
+      <div class="page-header">
+        <h1 class="page-title">Profil</h1>
+      </div>
+      <div id="profile-content" class="profile-sections"></div>
+    </div>
+  </div>
+
+  <!-- ==================== NAVIGATION BAS ==================== -->
+  <nav id="bottom-nav" class="bottom-nav hidden">
+    <button class="nav-btn" data-screen="dashboard">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Accueil</span>
+    </button>
+    <button class="nav-btn" data-screen="programme">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Programme</span>
+    </button>
+    <button class="nav-btn" data-screen="progress">
+      <span class="nav-icon">📈</span>
+      <span class="nav-label">Progrès</span>
+    </button>
+    <button class="nav-btn" data-screen="badges">
+      <span class="nav-icon">🏅</span>
+      <span class="nav-label">Badges</span>
+    </button>
+    <button class="nav-btn" data-screen="profile">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profil</span>
+    </button>
+  </nav>
+
+  <!-- ==================== TOAST ==================== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ==================== SUPABASE ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+  <!-- Config -->
+  <script src="js/config.js"></script>
+
+  <!-- Data -->
+  <script src="js/data/programmes.js"></script>
+
+  <!-- Core -->
+  <script src="js/core/state.js"></script>
+  <script src="js/core/router.js"></script>
+  <script src="js/core/auth.js"></script>
+
+  <!-- UI -->
+  <script src="js/ui/toast.js"></script>
+  <script src="js/ui/animations.js"></script>
+  <script src="js/ui/timer.js"></script>
+  <script src="js/ui/sounds.js"></script>
+
+  <!-- Screens -->
+  <script src="js/screens/auth.js"></script>
+  <script src="js/screens/audit.js"></script>
+  <script src="js/screens/result.js"></script>
+  <script src="js/screens/dashboard.js"></script>
+  <script src="js/screens/session.js"></script>
+  <script src="js/screens/recap.js"></script>
+  <script src="js/screens/programme.js"></script>
+  <script src="js/screens/progress.js"></script>
+  <script src="js/screens/badges.js"></script>
+  <script src="js/screens/profile.js"></script>
+
+  <!-- Init -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.init();
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+</body>
+</html>

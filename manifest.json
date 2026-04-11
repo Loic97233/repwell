@@ -1,0 +1,24 @@
+{
+  "name": "RepWell",
+  "short_name": "RepWell",
+  "description": "Ton coach fitness personnalisé",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#F55F2E",
+  "icons": [
+    {
+      "src": "assets/images/logo-repwell.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/images/logo-repwell.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
