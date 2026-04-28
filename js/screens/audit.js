@@ -7,6 +7,7 @@ const AuditScreen = {
   total: 7,
   answers: {},
 
+  isEdit: false,
   steps: [
     { id:'prenom',      titre:'Comment tu t\'appelles ?',           sous:'On va personnaliser ton expérience.',             type:'text',         key:'prenom',       placeholder:'Ton prénom' },
     { id:'genre',       titre:'Es-tu un homme ou une femme ?',       sous:null,                                              type:'chips-single', key:'genre',        options:[{ label:'Homme', value:'homme' },{ label:'Femme', value:'femme' }] },
@@ -19,10 +20,28 @@ const AuditScreen = {
 
   init() {
     this.step = 1;
+     this.isEdit = false;
     this.answers = {};
     const prenom = sessionStorage.getItem('rw_prenom');
     if (prenom) this.answers.prenom = prenom;
     this.render();
+},
+
+  initWithProfile(profile) {
+    this.step = 1;
+    this.isEdit = true;
+    this.answers = {
+      prenom:       profile.prenom       || '',
+      genre:        profile.genre        || null,
+      objectif:     profile.objectif     || null,
+      lieu:         profile.lieu         || null,
+      frequence:    profile.frequence    || null,
+      duree_seance: profile.duree_seance || null,
+      contraintes:  profile.contraintes  || [],
+    };
+    Router.go('audit');
+    this.render();
+  },
   },
 
   render() {
@@ -147,35 +166,64 @@ const AuditScreen = {
 
     const programmeId = Programmes.assign(this.answers);
 
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .insert({
-        user_id:      State.user.id,
-        prenom:       this.answers.prenom || '',
-        genre:        this.answers.genre || null,
-        objectif:     this.answers.objectif || null,
-        lieu:         this.answers.lieu || null,
-        frequence:    this.answers.frequence || null,
+    if (this.isEdit) {
+      const programmeChanged = State.profile && State.profile.programme_id !== programmeId;
+      const updates = {
+        prenom:       this.answers.prenom       || '',
+        genre:        this.answers.genre        || null,
+        objectif:     this.answers.objectif     || null,
+        lieu:         this.answers.lieu         || null,
+        frequence:    this.answers.frequence    || null,
         duree_seance: this.answers.duree_seance || null,
-        contraintes:  this.answers.contraintes || [],
+        contraintes:  this.answers.contraintes  || [],
         programme_id: programmeId,
-        niveau:       'debutant',
-      })
-      .select()
-      .single();
-
-    if (error) {
-      Toast.show('Erreur lors de l\'enregistrement. Réessaie.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Continuer'; }
-      return;
+      };
+      if (programmeChanged) {
+        updates.programme_start_date = new Date().toISOString().split('T')[0];
+      }
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .update(updates)
+        .eq('user_id', State.user.id)
+        .select()
+        .single();
+      if (error) {
+        Toast.show('Erreur lors de la mise à jour. Réessaie.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Continuer'; }
+        return;
+      }
+      State.profile   = data;
+      State.programme = Programmes.get(programmeId);
+      Router.go('result');
+      ResultScreen.render();
+    } else {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .insert({
+          user_id:      State.user.id,
+          prenom:       this.answers.prenom       || '',
+          genre:        this.answers.genre        || null,
+          objectif:     this.answers.objectif     || null,
+          lieu:         this.answers.lieu         || null,
+          frequence:    this.answers.frequence    || null,
+          duree_seance: this.answers.duree_seance || null,
+          contraintes:  this.answers.contraintes  || [],
+          programme_id: programmeId,
+          niveau:       'debutant',
+        })
+        .select()
+        .single();
+      if (error) {
+        Toast.show('Erreur lors de l\'enregistrement. Réessaie.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Continuer'; }
+        return;
+      }
+      sessionStorage.removeItem('rw_prenom');
+      State.profile   = data;
+      State.programme = Programmes.get(programmeId);
+      await Auth.loadStreak(State.user.id);
+      Router.go('result');
+      ResultScreen.render();
     }
-
-    sessionStorage.removeItem('rw_prenom');
-    State.profile   = data;
-    State.programme = Programmes.get(programmeId);
-    await Auth.loadStreak(State.user.id);
-
-    Router.go('result');
-    ResultScreen.render();
   },
 };
