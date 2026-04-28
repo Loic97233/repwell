@@ -203,7 +203,7 @@ const SessionScreen = {
     document.getElementById('weight-display').textContent = this.weight;
   },
 
-  _bindWeightEvents(ex) {
+    _bindWeightEvents(ex) {
     document.getElementById('weight-minus').onclick = () => {
       if (this.weight > 0) {
         this.weight = Math.round((this.weight - 2.5) * 10) / 10;
@@ -215,41 +215,15 @@ const SessionScreen = {
       document.getElementById('weight-display').textContent = this.weight;
     };
 
-    document.getElementById('btn-validate-serie').onclick = () => this._validateSerie(ex);
-    document.getElementById('btn-skip-rest').onclick = () => this._skipRest();
-    document.getElementById('btn-ready').onclick = () => this._onReady();
-    this._startValidationCooldown(ex);
-  },
-
-  _startValidationCooldown(ex) {
-    clearInterval(this._cooldownInterval);
     const btn = document.getElementById('btn-validate-serie');
-    if (!btn) return;
-
-    // Durée minimale selon les reps : max(25, reps × 2.5)
-    const reps      = (ex && ex.reps && typeof ex.reps === 'number') ? ex.reps : 10;
-    const minDuree  = Math.max(25, Math.round(reps * 2.5));
-    let elapsed     = 0;
-
-    btn.disabled    = true;
-    btn.textContent = 'Série en cours... 0:00';
-
-    const iv = setInterval(() => {
-      elapsed++;
-      const m = Math.floor(elapsed / 60);
-      const s = (elapsed % 60).toString().padStart(2, '0');
-
-      if (elapsed >= minDuree) {
-        clearInterval(iv);
-        btn.disabled    = false;
-        btn.textContent = 'Valider la série ✓';
-      } else {
-        btn.textContent = `Série en cours... ${m}:${s}`;
-      }
-    }, 1000);
-
-    this._cooldownInterval = iv;
+    btn.disabled    = false;
+    btn.textContent = 'Valider la série ✓';
+    btn.onclick = () => this._validateSerie(ex);
+    document.getElementById('btn-skip-rest').onclick = () => RestTimer.hide();
+    document.getElementById('btn-ready').onclick = () => this._onReady();
   },
+
+
 
   async _validateSerie(ex) {
     const serie = this.seriesState[this.currentSerie];
@@ -312,13 +286,13 @@ const SessionScreen = {
     document.getElementById('rest-timer-zone').classList.add('hidden');
     document.getElementById('weight-input-zone').classList.remove('hidden');
     this._renderSeriesTracker();
-    this._startValidationCooldown(this.exercices[this.currentEx]);
+    this._bindWeightEvents(this.exercices[this.currentEx]);
     Sounds.tick();
   },
 
   _advanceExercise() {
     RestTimer.stop();
-    clearInterval(this._cooldownInterval);
+    const prevEx = this.exercices[this.currentEx];
     this.currentEx++;
 
     if (this.currentEx >= this.exercices.length) {
@@ -326,12 +300,22 @@ const SessionScreen = {
       return;
     }
 
-    // Vérifier si transition de bloc
     this._initSeriesState();
-    document.getElementById('rest-timer-zone').classList.add('hidden');
-    document.getElementById('weight-input-zone').classList.remove('hidden');
+    document.getElementById('weight-input-zone').classList.add('hidden');
     document.getElementById('pr-badge').classList.add('hidden');
-    this._render();
+
+    if (!prevEx?.isWarmup && !prevEx?.isHIIT) {
+      const lbl = document.querySelector('.rest-label');
+      if (lbl) lbl.textContent = 'Repos entre exercices';
+      RestTimer.start(120, () => {
+        const lbl2 = document.querySelector('.rest-label');
+        if (lbl2) lbl2.textContent = 'Temps de repos';
+        this._render();
+      });
+    } else {
+      document.getElementById('rest-timer-zone').classList.add('hidden');
+      this._render();
+    }
   },
 
   async _checkPR(ex, poids) {
