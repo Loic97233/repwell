@@ -94,7 +94,8 @@ const ProfileScreen = {
           <span class="profile-key">Email</span>
           <span class="profile-val profile-val-sm">${State.user ? State.user.email : ''}</span>
         </div>
-        <button id="btn-logout" class="btn-secondary btn-full profile-logout">Se déconnecter</button>
+       <button id="btn-edit-audit" class="btn-secondary btn-full" style="margin-bottom:var(--space-sm)">✏️ Modifier mes informations</button>
+<button id="btn-logout" class="btn-secondary btn-full profile-logout">Se déconnecter</button>
       </div>
     `;
 
@@ -158,7 +159,13 @@ const ProfileScreen = {
       State.profile.dark_mode = darkMode;
     };
 
-    // Logout
+    // // Modifier l'audit
+document.getElementById('btn-edit-audit').onclick = () => {
+  AuditScreen.initWithProfile(State.profile);
+};
+
+// Logout
+document.getElementById('btn-logout').onclick = () => Auth.logout();Logout
     document.getElementById('btn-logout').onclick = () => Auth.logout();
 
     // Appliquer le dark mode actuel
