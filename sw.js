@@ -3,7 +3,7 @@
    Cache-first pour les assets statiques
    ===================================================== */
 
-const CACHE_NAME = 'repwell-v1';
+const CACHE_NAME = 'repwell-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
