@@ -6,26 +6,26 @@ const AuditScreen = {
   step: 1,
   total: 7,
   answers: {},
-
   isEdit: false,
+
   steps: [
-    { id:'prenom',      titre:'Comment tu t\'appelles ?',           sous:'On va personnaliser ton expérience.',             type:'text',         key:'prenom',       placeholder:'Ton prénom' },
-    { id:'genre',       titre:'Es-tu un homme ou une femme ?',       sous:null,                                              type:'chips-single', key:'genre',        options:[{ label:'Homme', value:'homme' },{ label:'Femme', value:'femme' }] },
-    { id:'objectif',    titre:'Ton objectif principal ?',           sous:'On peut ajuster plus tard.',                      type:'chips-single', key:'objectif',     options:[{ label:'🔥 Perdre de la graisse', value:'graisse' },{ label:'💪 Gagner du muscle', value:'muscle' },{ label:'⚡ Les deux à la fois', value:'mixte' },{ label:'❤️ Garder la forme', value:'forme' }] },
-    { id:'lieu',        titre:'Où tu t\'entraînes ?',               sous:null,                                              type:'chips-single', key:'lieu',         options:[{ label:'🏋️ Salle de sport', value:'salle' },{ label:'🏠 Maison avec matériel', value:'maison_materiel' },{ label:'🤸 Maison sans matériel', value:'maison_corps' }] },
-    { id:'frequence',   titre:'Combien de fois par semaine ?',      sous:'Choisis un rythme tenable sur la durée.',         type:'chips-single', key:'frequence',    options:[{ label:'2×', value:2 },{ label:'3×', value:3 },{ label:'4×', value:4 },{ label:'5×', value:5 }] },
-    { id:'duree',       titre:'Durée de ta séance idéale ?',        sous:'Échauffement inclus.',                            type:'chips-single', key:'duree_seance', options:[{ label:'30 min', value:30 },{ label:'45 min', value:45 },{ label:'60 min', value:60 },{ label:'90 min', value:90 }] },
-    { id:'contraintes', titre:'Contraintes physiques ?',            sous:'Plusieurs choix possibles. Aucune si tout va bien.', type:'chips-multi', key:'contraintes', options:[{ label:'🔴 Dos', value:'dos' },{ label:'🔴 Genoux', value:'genoux' },{ label:'🔴 Épaules', value:'epaules' },{ label:'🔴 Poignets', value:'poignets' },{ label:'🔴 Chevilles', value:'chevilles' },{ label:'✅ Aucune', value:'aucune' }] },
+    { id:'prenom',      titre:'Comment tu t\'appelles ?',           sous:'On va personnaliser ton expérience.',               type:'text',         key:'prenom',       placeholder:'Ton prénom' },
+    { id:'genre',       titre:'Es-tu un homme ou une femme ?',       sous:null,                                                type:'chips-single', key:'genre',        options:[{ label:'Homme', value:'homme' },{ label:'Femme', value:'femme' }] },
+    { id:'objectif',    titre:'Ton objectif principal ?',           sous:'On peut ajuster plus tard.',                        type:'chips-single', key:'objectif',     options:[{ label:'🔥 Perdre de la graisse', value:'graisse' },{ label:'💪 Gagner du muscle', value:'muscle' },{ label:'⚡ Les deux à la fois', value:'mixte' },{ label:'❤️ Garder la forme', value:'forme' }] },
+    { id:'lieu',        titre:'Où tu t\'entraînes ?',               sous:null,                                                type:'chips-single', key:'lieu',         options:[{ label:'🏋️ Salle de sport', value:'salle' },{ label:'🏠 Maison avec matériel', value:'maison_materiel' },{ label:'🤸 Maison sans matériel', value:'maison_corps' }] },
+    { id:'frequence',   titre:'Combien de fois par semaine ?',      sous:'Choisis un rythme tenable sur la durée.',           type:'chips-single', key:'frequence',    options:[{ label:'2×', value:2 },{ label:'3×', value:3 },{ label:'4×', value:4 },{ label:'5×', value:5 }] },
+    { id:'duree',       titre:'Durée de ta séance idéale ?',        sous:'Échauffement inclus.',                              type:'chips-single', key:'duree_seance', options:[{ label:'30 min', value:30 },{ label:'45 min', value:45 },{ label:'60 min', value:60 },{ label:'90 min', value:90 }] },
+    { id:'contraintes', titre:'Contraintes physiques ?',            sous:'Plusieurs choix possibles. Aucune si tout va bien.', type:'chips-multi',  key:'contraintes',  options:[{ label:'🔴 Dos', value:'dos' },{ label:'🔴 Genoux', value:'genoux' },{ label:'🔴 Épaules', value:'epaules' },{ label:'🔴 Poignets', value:'poignets' },{ label:'🔴 Chevilles', value:'chevilles' },{ label:'✅ Aucune', value:'aucune' }] },
   ],
 
   init() {
     this.step = 1;
-     this.isEdit = false;
+    this.isEdit = false;
     this.answers = {};
     const prenom = sessionStorage.getItem('rw_prenom');
     if (prenom) this.answers.prenom = prenom;
     this.render();
-},
+  },
 
   initWithProfile(profile) {
     this.step = 1;
@@ -41,7 +41,6 @@ const AuditScreen = {
     };
     Router.go('audit');
     this.render();
-  },
   },
 
   render() {
