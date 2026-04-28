@@ -57,8 +57,11 @@ const Auth = {
       AuditScreen.init();
     } else {
       State.profile = profile;
-      State.programme = Programmes.get(profile.programme_id);
-      await this.loadStreak(user.id);
+State.programme = Programmes.get(profile.programme_id);
+if (profile.dark_mode) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+await this.loadStreak(user.id);
       Router.go('dashboard');
     }
   },
