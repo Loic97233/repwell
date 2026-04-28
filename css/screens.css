@@ -191,8 +191,12 @@
 }
 
 .audit-cta {
-  margin-top: auto;
-  padding-top: var(--space-lg);
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+  z-index: 1;
 }
 
 /* ══════════════════════════════════════════════
@@ -828,6 +832,19 @@
   text-align: center;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  position: sticky;
+  bottom: var(--space-md);
+}
+
+/* Zone poids + validation — toujours visible en bas du scroll */
+#weight-input-zone {
+  position: sticky;
+  bottom: var(--space-md);
+}
+
+/* SVG exercice — réduit sur petits écrans */
+@media (max-height: 700px) {
+  .exercise-svg { height: 90px; }
 }
 
 .rest-label {
